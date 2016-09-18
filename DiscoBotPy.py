@@ -3,11 +3,15 @@ import discord
 import LoLapi
 import Login
 import random
+import requests
+import time, datetime
 from cleverbot import Cleverbot
 
 client = discord.Client()
 cb = Cleverbot()
 
+# Starttime of bot. Used by !uptime
+startTime = datetime.datetime.now()
 
 ### Functions
 @client.event
@@ -33,6 +37,10 @@ def on_message(message):
         commands_func(author, message)
     if message.content.startswith("!help"):
         help_func(author, message)
+    if message.content.startswith("!twitch"):
+        twitch_func(author, message)
+    if message.content.startswith("!uptime"):
+        uptime_func(author, message)
         
 def hello_func(author, message):
     client.send_message(message.channel, "Hello %s! :D" % author)
@@ -90,7 +98,8 @@ def opgg_func(author, message):
 
 def commands_func(author, message):
     msg = "```"
-    msg += "!hello \n!kill \n!rank \n!roll \n!cleverbot \n!opgg \n!commands"
+    msg += "!hello \n!kill \n!rank \n!roll \n!cleverbot \n!opgg"
+    msg += "\n!twitch \n!uptime \n!commands"
     msg += "```"
     client.send_message(message.channel, msg)
     print "commands_func"
@@ -102,7 +111,46 @@ def help_func(author, message):
     client.send_message(message.channel, msg)
     print "help_func"
 
-    
+def twitch_func(author, message):
+    m = message.content.split()
+    if len(m) <= 1:
+        print "twitch_func: no argument"
+        msg = "Needs 1 argument. ex: `!twitch Dekar173`"
+        client.send_message(message.channel, msg)
+        return
+    streamer = m[1]
+    url = "https://api.twitch.tv/kraken/streams/" + streamer
+    response = requests.get(url)
+    json = response.json()
+    try:
+        if json["stream"] == None:
+            msg = "twitch.tv/" + streamer + " is **offline**"
+        else:
+            msg = "twitch.tv/" + streamer + " is **online**"
+        print "twitch_func"
+    except:
+        msg = "twitch.tv/" + streamer + " doesn't exist"
+        print "twitch_func json (try) error"
+    client.send_message(message.channel, msg)
+
+
+def uptime_func(author, message):
+    now = datetime.datetime.now()
+    hour = now.hour - startTime.hour
+    if hour < 0:
+        hour += 24
+    minute = now.minute - startTime.minute
+    if minute < 0:
+        minute += 60
+        hour -= 1
+    second = now.second - startTime.second
+    if second < 0:
+        second += 60
+        minute -= 1
+    msg = "uptime: " + str(hour) + "h" + str(minute) + "m" + str(second) + "s"
+    client.send_message(message.channel, msg)
+
+
 ### Main   
 mail = Login.mail
 password = Login.password
