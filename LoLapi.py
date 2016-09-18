@@ -21,8 +21,8 @@ def requestRankedData(region, summonerID):
 
 
 def getRank(region, summoner):
-    #summoner = 'Archivon'
-    #region = 'euw'
+    #summoner = 'cris'
+    #region = 'na'
 
     # get summoner data
     responseJSON = requestSummonerData(region, summoner)

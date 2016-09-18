@@ -88,5 +88,5 @@ ENV/
 # Rope project settings
 .ropeproject
 
-# password / api key file
+# password / api key file (super secret)
 Login.py
