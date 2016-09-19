@@ -6,6 +6,7 @@ import random
 import requests
 import time, datetime
 from cleverbot import Cleverbot
+import TwitterScanner
 
 client = discord.Client()
 cb = Cleverbot()
@@ -41,6 +42,8 @@ def on_message(message):
         twitch_func(author, message)
     if message.content.startswith("!uptime"):
         uptime_func(author, message)
+    if message.content.startswith("!pogo"):
+        pogo_func(author, message)
         
 def hello_func(author, message):
     client.send_message(message.channel, "Hello %s! :D" % author)
@@ -99,7 +102,7 @@ def opgg_func(author, message):
 def commands_func(author, message):
     msg = "```"
     msg += "!hello \n!kill \n!rank \n!roll \n!cleverbot \n!opgg"
-    msg += "\n!twitch \n!uptime \n!commands"
+    msg += "\n!twitch \n!uptime \n!pogo \n!commands"
     msg += "```"
     client.send_message(message.channel, msg)
     print "commands_func"
@@ -133,7 +136,6 @@ def twitch_func(author, message):
         print "twitch_func json (try) error"
     client.send_message(message.channel, msg)
 
-
 def uptime_func(author, message):
     now = datetime.datetime.now()
     hour = now.hour - startTime.hour
@@ -149,6 +151,30 @@ def uptime_func(author, message):
         minute -= 1
     msg = "uptime: " + str(hour) + "h" + str(minute) + "m" + str(second) + "s"
     client.send_message(message.channel, msg)
+    print "uptime_func"
+
+def pogo_func(author, message):
+    url = "https://twitter.com/PokemonGBG"
+    tweets = TwitterScanner.url2tweets(url)
+    msg = ""
+    for tweet in tweets:
+        if tweet not in cachedTweets:
+            if "all" in pokemonsToScan:
+                cachedTweets.append(tweet)
+                msg += tweet + "\n"
+            else:
+                for pokemon in pokemonsToScan:
+                    if tweet.startswith(str(pokemon)):
+                        cachedTweets.append(tweet)
+                        msg += tweet + "\n"               
+    if msg != "":
+        client.send_message(message.channel, msg)
+        print "pogo_func"
+    else:
+        print "pogo_func (empty)"
+
+cachedTweets = []
+pokemonsToScan = ["all", "Dragonite", "Porygon"]
 
 
 ### Main   

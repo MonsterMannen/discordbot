@@ -16,7 +16,7 @@ def getTweets(html):
 		# offset to skip first ta
 		start = html.find(">", (pos + len(tag)))
 		end = html.find("<", start)
-		tweets.append(html[start+1:end-1])
+		tweets.append(html[start+1:end-2])
 	return tweets
 
 def findAll(str_text, str_find):
@@ -41,4 +41,5 @@ if __name__ == '__main__':
 	tweets = url2tweets(twitterURL)
 	for tweet in tweets:
 		print tweet
-		
+
+	
