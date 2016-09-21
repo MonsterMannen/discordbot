@@ -44,6 +44,8 @@ def on_message(message):
         uptime_func(author, message)
     if message.content.startswith("!pogo"):
         pogo_func(author, message)
+    if message.content.startswith("!imdb"):
+        imdb_func(author, message)
         
 def hello_func(author, message):
     client.send_message(message.channel, "Hello %s! :D" % author)
@@ -152,6 +154,27 @@ def uptime_func(author, message):
     msg = "uptime: " + str(hour) + "h" + str(minute) + "m" + str(second) + "s"
     client.send_message(message.channel, msg)
     print "uptime_func"
+
+def imdb_func(author, message):
+    movieTitle = message.content[6:]
+    url = "http://www.omdbapi.com/?t=" + movieTitle + "&y=&plot=short&r=json"
+    r = requests.get(url)
+    json = r.json()
+    if json["Response"] == "True":
+        title = json["Title"]
+        year = json["Year"]
+        rating = json["imdbRating"]
+        # ghetto fix ascii character problem when printing
+        if len(year) == 9:
+            year = year[:4] + "-" + year[5:]
+        elif len(year) == 5:
+            year = year[:4] + "-"
+        msg = title + "\n" + year + "\n" + rating
+        decoded_string = msg.decode('string_escape')
+        client.send_message(message.channel, msg)
+    else:
+        print "imdb response false (" + movieTitle + ")"
+        client.send_message(message.channel, json["Error"])
 
 def pogo_func(author, message):
     url = "https://twitter.com/PokemonGBG"
