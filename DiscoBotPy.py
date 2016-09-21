@@ -51,6 +51,10 @@ def on_message(message):
         youtube_func(author, message)
     if message.content.startswith("!youtube"):
         youtube_func(author, message)
+    if message.content.startswith("!code"):
+        code_func(author, message)
+    if message.content.startswith("!dick"):
+        dick_func(author, message)
         
 def hello_func(author, message):
     client.send_message(message.channel, "Hello %s! :D" % author)
@@ -227,7 +231,13 @@ def youtube_func(author, message):
     print "yt func"
 
 def dick_func(author, message):
-    return
+    r = random.randint(0, 10)
+    d = "8" + r * "=" + "D"
+    client.send_message(message.channel, d)
+
+def code_func(author, message):
+    msg = "https://github.com/MonsterMannen/discordbot"
+    client.send_message(message.channel, msg)
 
 ### Main   
 mail = Login.mail
