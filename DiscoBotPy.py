@@ -7,6 +7,7 @@ import requests
 import time, datetime
 from cleverbot import Cleverbot
 import TwitterScanner
+import urllib2
 
 client = discord.Client()
 cb = Cleverbot()
@@ -46,6 +47,10 @@ def on_message(message):
         pogo_func(author, message)
     if message.content.startswith("!imdb"):
         imdb_func(author, message)
+    if message.content.startswith("!yt"):
+        youtube_func(author, message)
+    if message.content.startswith("!youtube"):
+        youtube_func(author, message)
         
 def hello_func(author, message):
     client.send_message(message.channel, "Hello %s! :D" % author)
@@ -199,6 +204,30 @@ def pogo_func(author, message):
 cachedTweets = []
 pokemonsToScan = ["all", "Dragonite", "Porygon"]
 
+def youtube_func(author, message):
+    m = message.content.split()
+    if len(m) <= 1:
+        client.send_message(message.channel, "No arguments")
+        print "yt_func (no arguments)"
+        return
+    keywords = m[1:]
+    searchString = ""
+    for word in keywords:
+        searchString += str(word) + "+"
+    searchString = searchString[:-1]
+    url = "https://www.youtube.com/results?search_query=" + searchString
+    tag = 'data-context-item-id="'
+    response = urllib2.urlopen(url)
+    html = response.read()
+    pos_start = html.find(tag) + len(tag)
+    pos_end = html.find('"', pos_start)
+    video_id = html[pos_start:pos_end]
+    video_url = "http://www.youtube.com/watch?v=" + video_id
+    client.send_message(message.channel, video_url)
+    print "yt func"
+
+def dick_func(author, message):
+    return
 
 ### Main   
 mail = Login.mail
